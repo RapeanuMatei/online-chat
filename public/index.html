@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FriendChat</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Join screen -->
+  <div class="join" id="join">
+    <form class="join-card" id="joinForm">
+      <div class="logo">💬</div>
+      <h1>Hey, who's this?</h1>
+      <p>Pick a name and jump in with your friends.</p>
+      <input id="nameInput" maxlength="20" placeholder="Your name" autocomplete="off" required />
+      <button type="submit">Join the chat</button>
+    </form>
+  </div>
+
+  <!-- App -->
+  <div class="app" id="app">
+    <aside class="sidebar">
+      <h2>The crew</h2>
+      <p class="sub" id="onlineCount">0 online</p>
+      <ul id="userList"></ul>
+    </aside>
+
+    <main class="chat">
+      <header>
+        <div class="title">
+          <strong>The Group Chat</strong>
+          <span id="typing" class="typing"></span>
+        </div>
+      </header>
+
+      <div class="messages" id="messages"></div>
+
+      <form class="composer" id="composer">
+        <input id="msgInput" placeholder="Say something nice…" autocomplete="off" maxlength="1000" />
+        <button type="submit" aria-label="Send message">Send</button>
+      </form>
+    </main>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
