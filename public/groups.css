@@ -1,0 +1,52 @@
+/* Extra styles for groups, invitations and the pop-up sheet. Loaded after style.css. */
+.title { flex: 1; }
+.typing.muted { color: var(--muted); }
+#menuBtn { display: none; }
+button.small { padding: 8px 14px; font-size: 18px; }
+button.danger { background: #4a1f33; color: #ff9db8; }
+button:disabled { opacity: .5; cursor: default; }
+
+.side-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 18px; }
+.list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 4px; margin-bottom: 24px; }
+.list button {
+  width: 100%; display: flex; justify-content: space-between; gap: 10px;
+  text-align: left; background: transparent; padding: 12px 14px; font-weight: 600;
+}
+.list button:hover { background: var(--bubble-other); filter: none; }
+.list button.active { background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); }
+.list .count { opacity: .7; font-weight: 500; }
+.list .none { color: var(--muted); font-size: 14px; padding: 4px 14px; }
+
+.header-actions { display: flex; gap: 8px; align-items: center; }
+.empty { margin: auto; text-align: center; color: var(--muted); max-width: 300px; line-height: 1.5; }
+
+.join-card { max-height: 92dvh; overflow-y: auto; }
+.stack { display: flex; flex-direction: column; gap: 14px; }
+.row-btns { display: flex; gap: 8px; }
+.row-btns > * { flex: 1; }
+.members { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 8px; max-height: 200px; overflow-y: auto; }
+.members li { display: flex; align-items: center; gap: 10px; }
+.badge {
+  margin-left: auto; font-size: 12px; font-weight: 700; padding: 2px 10px; border-radius: 999px;
+  background: linear-gradient(135deg, var(--accent-a), var(--accent-b));
+}
+.label { color: var(--muted); font-size: 14px; }
+
+.composer.disabled { opacity: .5; pointer-events: none; }
+
+.toast {
+  position: fixed; left: 50%; bottom: 90px; z-index: 30;
+  transform: translate(-50%, 20px); opacity: 0; pointer-events: none;
+  background: var(--bubble-other); padding: 10px 18px; border-radius: 999px;
+  transition: opacity .2s, transform .2s;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+@media (max-width: 720px) {
+  #menuBtn { display: block; }
+  .sidebar {
+    display: block; position: fixed; inset: 0 auto 0 0; z-index: 6;
+    width: min(300px, 85%); transform: translateX(-105%); transition: transform .2s;
+  }
+  .sidebar.open { transform: none; box-shadow: 0 0 0 100vmax rgba(0, 0, 0, .55); }
+}

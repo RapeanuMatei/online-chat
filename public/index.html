@@ -7,7 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="/groups.css" />
 </head>
 <body>
   <!-- Create / edit profile -->
@@ -26,23 +27,36 @@
     </form>
   </div>
 
+  <!-- Pop-up used for: new group, group settings, invitations -->
+  <div class="join hidden" id="sheet"><div class="join-card" id="sheetCard"></div></div>
+
   <!-- Full-size picture viewer -->
   <div class="lightbox hidden" id="lightbox"><img id="lightboxImg" alt="" /></div>
+  <div class="toast" id="toast" role="status"></div>
 
   <div class="app">
-    <aside class="sidebar">
-      <h2>The crew</h2>
-      <p class="sub" id="onlineCount">0 online</p>
+    <aside class="sidebar" id="sidebar">
+      <div class="side-head">
+        <h2>FriendChat</h2>
+        <button type="button" class="icon small" id="newGroupBtn" aria-label="Create a group">＋</button>
+      </div>
+      <p class="sub">Your groups</p>
+      <ul class="list" id="groupList"></ul>
+      <p class="sub" id="memberLabel">Members</p>
       <ul id="userList"></ul>
     </aside>
 
     <main class="chat">
       <header>
+        <button type="button" class="ghost icon small" id="menuBtn" aria-label="Show groups">☰</button>
         <div class="title">
-          <strong>The Group Chat</strong>
-          <span id="typing" class="typing"></span>
+          <strong id="groupTitle">FriendChat</strong>
+          <span id="groupSub" class="typing muted"></span>
         </div>
-        <button type="button" class="profile-btn" id="profileBtn" aria-label="Edit your profile"></button>
+        <div class="header-actions">
+          <button type="button" class="ghost icon small" id="manageBtn" aria-label="Group settings" hidden>⚙️</button>
+          <button type="button" class="profile-btn" id="profileBtn" aria-label="Edit your profile"></button>
+        </div>
       </header>
 
       <div class="messages" id="messages"></div>
@@ -57,6 +71,6 @@
   </div>
 
   <script src="/socket.io/socket.io.js"></script>
-  <script src="app.js"></script>
+  <script src="/app.js"></script>
 </body>
 </html>
