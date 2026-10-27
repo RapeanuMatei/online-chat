@@ -10,19 +10,26 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- Join screen -->
-  <div class="join" id="join">
-    <form class="join-card" id="joinForm">
-      <div class="logo">💬</div>
-      <h1>Hey, who's this?</h1>
-      <p>Pick a name and jump in with your friends.</p>
+  <!-- Create / edit profile -->
+  <div class="join hidden" id="profileModal">
+    <form class="join-card" id="profileForm">
+      <h1 id="profileTitle">Create your profile</h1>
+      <p>Pick a name and a picture. Your friends will see them in the chat.</p>
+      <label class="avatar-pick" for="avatarInput" title="Choose a picture">
+        <img id="avatarPreview" alt="" hidden />
+        <span id="avatarHint">Add a picture</span>
+      </label>
+      <input id="avatarInput" type="file" accept="image/*" hidden />
       <input id="nameInput" maxlength="20" placeholder="Your name" autocomplete="off" required />
-      <button type="submit">Join the chat</button>
+      <button type="submit" id="saveBtn">Join the chat</button>
+      <button type="button" class="ghost" id="cancelBtn" hidden>Cancel</button>
     </form>
   </div>
 
-  <!-- App -->
-  <div class="app" id="app">
+  <!-- Full-size picture viewer -->
+  <div class="lightbox hidden" id="lightbox"><img id="lightboxImg" alt="" /></div>
+
+  <div class="app">
     <aside class="sidebar">
       <h2>The crew</h2>
       <p class="sub" id="onlineCount">0 online</p>
@@ -35,13 +42,16 @@
           <strong>The Group Chat</strong>
           <span id="typing" class="typing"></span>
         </div>
+        <button type="button" class="profile-btn" id="profileBtn" aria-label="Edit your profile"></button>
       </header>
 
       <div class="messages" id="messages"></div>
 
       <form class="composer" id="composer">
+        <button type="button" class="ghost icon" id="photoBtn" aria-label="Send a picture">📷</button>
+        <input id="photoInput" type="file" accept="image/*" hidden />
         <input id="msgInput" placeholder="Say something nice…" autocomplete="off" maxlength="1000" />
-        <button type="submit" aria-label="Send message">Send</button>
+        <button type="submit">Send</button>
       </form>
     </main>
   </div>

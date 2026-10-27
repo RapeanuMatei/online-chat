@@ -4,56 +4,85 @@ const { Server } = require("socket.io");
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+// Allow bigger messages so pictures can be sent (5 MB)
+const io = new Server(server, { maxHttpBufferSize: 5e6 });
 
 app.use(express.static("public"));
 
 const MAX_HISTORY = 100;
-const COLORS = ["#ff6b8b", "#ffb347", "#5ee0a0", "#5cc8ff", "#9b8cff", "#ff8fd8", "#ffd95c"];
-const history = []; // last messages, kept in memory
-const users = new Map(); // socket.id -> { id, name, color }
+const MAX_AVATAR = 150_000; // characters of base64 data
+const MAX_PHOTO = 700_000;
 
-function addNotice(text) {
-  const msg = { type: "notice", text, time: Date.now() };
-  history.push(msg);
-  io.emit("message", msg);
+const history = []; // last messages: { userId, text, image, time }
+const profiles = new Map(); // userId -> { id, name, avatar }
+const sockets = new Map(); // socket.id -> userId
+
+function isImage(data, maxLength) {
+  return (
+    typeof data === "string" &&
+    data.length <= maxLength &&
+    /^data:image\/(jpeg|png|webp|gif);base64,/.test(data)
+  );
+}
+
+function cleanProfile(raw) {
+  const id = String(raw?.id || "").slice(0, 60);
+  if (!id) return null;
+  const name = String(raw.name || "").trim().slice(0, 20) || "Guest";
+  const avatar = isImage(raw.avatar, MAX_AVATAR) ? raw.avatar : null;
+  return { id, name, avatar };
+}
+
+function sendPeople() {
+  io.emit("people", {
+    profiles: [...profiles.values()],
+    online: [...new Set(sockets.values())],
+  });
 }
 
 io.on("connection", (socket) => {
-  socket.on("join", (rawName) => {
-    const name = String(rawName || "").trim().slice(0, 20) || "Guest";
-    const color = COLORS[users.size % COLORS.length];
-    const user = { id: socket.id, name, color };
-    users.set(socket.id, user);
-
-    socket.emit("welcome", { me: user, history });
-    io.emit("users", [...users.values()]);
-    addNotice(`${name} joined the chat`);
+  // Someone opens the app (or reconnects) with their saved profile
+  socket.on("join", (raw) => {
+    const profile = cleanProfile(raw);
+    if (!profile) return;
+    profiles.set(profile.id, profile);
+    sockets.set(socket.id, profile.id);
+    socket.emit("welcome", history);
+    sendPeople();
   });
 
-  socket.on("message", (rawText) => {
-    const user = users.get(socket.id);
-    const text = String(rawText || "").trim().slice(0, 1000);
-    if (!user || !text) return;
+  // Someone changes their name or picture
+  socket.on("profile", (raw) => {
+    const userId = sockets.get(socket.id);
+    const profile = cleanProfile(raw);
+    if (!userId || !profile || profile.id !== userId) return;
+    profiles.set(userId, profile);
+    sendPeople();
+  });
 
-    const msg = { type: "chat", user, text, time: Date.now() };
+  socket.on("message", (data) => {
+    const userId = sockets.get(socket.id);
+    if (!userId) return;
+    const text = String(data?.text || "").trim().slice(0, 1000);
+    const image = isImage(data?.image, MAX_PHOTO) ? data.image : null;
+    if (!text && !image) return;
+
+    const msg = { userId, text, image, time: Date.now() };
     history.push(msg);
     if (history.length > MAX_HISTORY) history.shift();
     io.emit("message", msg);
   });
 
   socket.on("typing", (isTyping) => {
-    const user = users.get(socket.id);
-    if (user) socket.broadcast.emit("typing", { name: user.name, isTyping });
+    const userId = sockets.get(socket.id);
+    if (userId) socket.broadcast.emit("typing", { userId, isTyping });
   });
 
   socket.on("disconnect", () => {
-    const user = users.get(socket.id);
-    if (!user) return;
-    users.delete(socket.id);
-    io.emit("users", [...users.values()]);
-    io.emit("typing", { name: user.name, isTyping: false });
-    addNotice(`${user.name} left`);
+    const userId = sockets.get(socket.id);
+    sockets.delete(socket.id);
+    if (userId) io.emit("typing", { userId, isTyping: false });
+    sendPeople();
   });
 });
 
